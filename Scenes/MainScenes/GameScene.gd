@@ -8,12 +8,17 @@ var build_tile
 var build_location
 var build_type
 
+var current_wave = 0
+var enemies_in_wave = 0
+
 func _ready():
 	map_node = get_node("Map1") # Gemmer selected map som variabel
 	
 	# Registrer vores build_buttons, hvis trykket på, tag valgte turret(via i.get_name) med til initiate_build_mode
 	for i in get_tree().get_nodes_in_group("build_buttons"):
 		i.connect("pressed", self, "initiate_build_mode", [i.get_name()])
+		
+	start_next_wave()
 
 func _process(delta):
 	if build_mode:
@@ -28,6 +33,35 @@ func _unhandled_input(event):
 		verify_and_build()
 		cancel_build_mode()
 
+##
+## MOB WAVE FUNKTIONER ER HERUNDER.
+##
+func start_next_wave():
+	# Her instansieres et wave, da ikke alle waves skal være ens, for senere hen at 
+	# kunne tilføje mere modstand.
+	var wave_data = retrieve_wave_data()
+	yield(get_tree().create_timer(0.2), "timeout") # Tid imellem waves.
+	spawn_enemies(wave_data)
+
+func retrieve_wave_data():
+	# Her er hardcoded 2 tanks, 0.7 og 0.1 er spawn tiden mellem de to tanks.
+	var wave_data = [["BlueTank", 3.0], ["BlueTank", 0.1]]
+	# Holder styr på hvilket wave vi er ved.
+	current_wave += 1
+	# Holder styr på hvor mange enemies der er tilbage i nuværende wave.
+	enemies_in_wave = wave_data.size()
+	return wave_data
+
+func spawn_enemies(wave_data):
+	for i in wave_data:
+		# Opretter ny enemy til wave.
+		var new_enemy = load("res://Scenes/Enemies/" + i[0] + ".tscn").instance()
+		map_node.get_node("Path").add_child(new_enemy, true)
+		yield(get_tree().create_timer(i[1]), "timeout")
+
+##
+## FUNKTIONER TIL AT BYGGE TOWERS ER HERUNDER.
+##
 func initiate_build_mode(tower_type):
 	# Hvis vi allerede er i build mode, stopper vi build mode. Så der f.eks kan vælges nyt tower_type.
 	if build_mode:
@@ -81,6 +115,8 @@ func verify_and_build():
 		# med den valgte position, da toweret blev placeret. 
 		var new_tower = load("res://Scenes/Turrets/" + build_type + ".tscn").instance()
 		new_tower.position = build_location
+		new_tower.built = true
+		new_tower.type = build_type
 		map_node.get_node("Turrets").add_child(new_tower, true)
 		
 		# Tilføj tile med id 3 til Map1, dette er et "usynligt" tile, 
