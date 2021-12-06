@@ -8,5 +8,5 @@ func _physics_process(delta):
 
 func turn():
 	# Vi laver en variabel som indeholder vores nuværende musseposition og sætter sprite filen "Turret" til at følge den.
-	var enemy_position = get_global_mouse_position()
+	var enemy_position = get_global_mouse_position() # TODO: Skal rettes til at pege mod første enemy fremfor mus.
 	get_node("Turret").look_at(enemy_position)
