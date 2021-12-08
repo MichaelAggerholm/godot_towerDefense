@@ -1,5 +1,7 @@
 extends Node2D
 
+signal game_finished(result)
+
 var map_node
 
 var build_mode = false
@@ -10,6 +12,9 @@ var build_type
 
 var current_wave = 0
 var enemies_in_wave = 0
+
+# spillerens hp
+var base_health = 100
 
 func _ready():
 	map_node = get_node("Map1") # Gemmer selected map som variabel
@@ -45,7 +50,7 @@ func start_next_wave():
 
 func retrieve_wave_data():
 	# Her er hardcoded 2 tanks, 0.7 og 0.1 er spawn tiden mellem de to tanks.
-	var wave_data = [["BlueTank", 2.0], ["BlueTank", 2.0], ["BlueTank", 2.0], ["BlueTank", 2.0]]
+	var wave_data = [["BlueTank", 2.0], ["BlueTank", 2.0], ["BlueTank", 1.0], ["BlueTank", 1.0], ["BlueTank", 1.0], ["BlueTank", 1.0]]
 	# Holder styr på hvilket wave vi er ved.
 	current_wave += 1
 	# Holder styr på hvor mange enemies der er tilbage i nuværende wave.
@@ -56,6 +61,10 @@ func spawn_enemies(wave_data):
 	for i in wave_data:
 		# Opretter ny enemy til wave.
 		var new_enemy = load("res://Scenes/Enemies/" + i[0] + ".tscn").instance()
+		
+		# Hvis vi tager skade fra tanks, trigges funktionen on_base_damage.
+		new_enemy.connect("base_damage", self, 'on_base_damage')
+		
 		map_node.get_node("Path").add_child(new_enemy, true)
 		yield(get_tree().create_timer(i[1]), "timeout")
 
@@ -125,3 +134,12 @@ func verify_and_build():
 		
 		# TODO: Reduser pengene fra tårnet.
 		# TODO: Opdater penge i visning.
+
+func on_base_damage(damage):
+	# reducer spillerens hp
+	base_health -= damage
+	if base_health <= 0:
+		emit_signal("game_finished", false)
+	else:
+		# Hvis ikke spilleren er død, opdateres health_bar til ny value, efter at have taget skade.
+		get_node("UI").update_health_bar(base_health)

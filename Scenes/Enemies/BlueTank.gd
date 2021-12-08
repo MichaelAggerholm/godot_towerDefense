@@ -1,7 +1,10 @@
 extends PathFollow2D
 
+signal base_damage(damage)
+
 var speed = 150
 var hp = 50
+var base_damage = 21
 
 onready var health_bar = get_node("HealthBar")
 onready var impact_area = get_node("Impact")
@@ -14,6 +17,11 @@ func _ready():
 	health_bar.set_as_toplevel(true)
 
 func _physics_process(delta):
+	if unit_offset == 1.0:
+		# Base damage er hvor tanken faktisk deler skade til spilleren hvis den ikke bliver ødelagt inden banens udgang.
+		emit_signal("base_damage", base_damage)
+		# Hvis ikke vi sætter tanks fri af queue ved end of line, stacker de bare ved slutningen af map....!
+		queue_free()
 	move(delta)
 
 # giver en glidende kørsel af tanken på map, fremfor at hakke, da den udregner hastighed fra sidste passerede tile.

@@ -1,5 +1,9 @@
 extends CanvasLayer
 
+onready var hp_bar = get_node("HUD/InfoBar/H/HP")
+# Denne del med Tween, i got no fucking idea.. rent kopieret fra youtube..
+onready var hp_bar_tween = get_node("HUD/InfoBar/H/HP/Tween")
+
 var tower_range = 750
 
 # Funktion til preview visning af tower ved byg af nyt tower, 
@@ -27,3 +31,14 @@ func update_tower_preview(new_position, color):
 	get_node("TowerPreview").rect_position = new_position
 	if get_node("TowerPreview/DragTower").modulate != Color(color):
 		get_node("TowerPreview/DragTower").modulate = Color(color)
+
+func update_health_bar(base_health):
+	# Denne del er igen med Tween for at reducere hp_bar smoothly.. got no clue how it works.. kopieret fra youtube..
+	hp_bar_tween.interpolate_property(hp_bar, 'value', hp_bar.value, base_health, 0.1, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
+	hp_bar_tween.start()
+	if base_health >= 60:
+		hp_bar.set_tint_progress("4eff15") # grøn
+	elif base_health <= 60 and base_health >= 25:
+		hp_bar.set_tint_progress("e1be32") # orange
+	else:
+		hp_bar.set_tint_progress("e11e1e") # rød
