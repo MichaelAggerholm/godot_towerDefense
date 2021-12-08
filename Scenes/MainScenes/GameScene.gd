@@ -40,12 +40,12 @@ func start_next_wave():
 	# Her instansieres et wave, da ikke alle waves skal være ens, for senere hen at 
 	# kunne tilføje mere modstand.
 	var wave_data = retrieve_wave_data()
-	yield(get_tree().create_timer(0.2), "timeout") # Tid imellem waves.
+	yield(get_tree().create_timer(2), "timeout") # Tid imellem waves.
 	spawn_enemies(wave_data)
 
 func retrieve_wave_data():
 	# Her er hardcoded 2 tanks, 0.7 og 0.1 er spawn tiden mellem de to tanks.
-	var wave_data = [["BlueTank", 3.0], ["BlueTank", 0.1]]
+	var wave_data = [["BlueTank", 2.0], ["BlueTank", 2.0], ["BlueTank", 2.0], ["BlueTank", 2.0]]
 	# Holder styr på hvilket wave vi er ved.
 	current_wave += 1
 	# Holder styr på hvor mange enemies der er tilbage i nuværende wave.

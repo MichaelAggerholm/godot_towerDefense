@@ -1,10 +1,39 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Scenes/Turrets/Turret2.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Towers/towerDefense_tile180.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Towers/towerDefense_tile250.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Effects/towerDefense_tile297.png" type="Texture" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
+
+[sub_resource type="Animation" id=2]
+resource_name = "Fire"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Turret/Muzzle1/MuzzleFlash:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Turret/Muzzle2/MuzzleFlash:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
 
 [node name="Turret2" type="Node2D"]
 script = ExtResource( 1 )
@@ -22,13 +51,30 @@ offset = Vector2( 10, 0 )
 [node name="Muzzle1" type="Position2D" parent="Turret"]
 position = Vector2( 41, 6 )
 
+[node name="MuzzleFlash" type="Sprite" parent="Turret/Muzzle1"]
+visible = false
+position = Vector2( 11, 0 )
+rotation = 3.14159
+scale = Vector2( 0.7, 0.7 )
+texture = ExtResource( 4 )
+
 [node name="Muzzle2" type="Position2D" parent="Turret"]
 position = Vector2( 41, -6 )
+
+[node name="MuzzleFlash" type="Sprite" parent="Turret/Muzzle2"]
+visible = false
+position = Vector2( 11, 0 )
+rotation = 3.14159
+scale = Vector2( 0.7, 0.7 )
+texture = ExtResource( 4 )
 
 [node name="Range" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Range"]
 shape = SubResource( 1 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Fire = SubResource( 2 )
 
 [connection signal="body_entered" from="Range" to="." method="_on_Area2D_body_entered"]
 [connection signal="body_exited" from="Range" to="." method="_on_Area2D_body_exited"]

@@ -37,9 +37,15 @@ func select_enemy():
 
 func fire():
 	ready = false
+	# Muzzle flash aktivering
+	fire_gun()
+	
 	enemy.on_hit(GameData.tower_data[type]["damage"])
 	yield(get_tree().create_timer(GameData.tower_data[type]["rof"]), "timeout")
 	ready = true
+
+func fire_gun():
+	get_node("AnimationPlayer").play("Fire")
 
 ## TURRET1
 func _on_Range_body_entered(body):
@@ -56,3 +62,4 @@ func _on_Area2D_body_entered(body):
 
 func _on_Area2D_body_exited(body):
 	enemy_array.erase(body.get_parent())
+	

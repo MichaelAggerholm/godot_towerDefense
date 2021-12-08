@@ -33,3 +33,6 @@ nine_patch_stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Impact" type="Position2D" parent="."]
+position = Vector2( -15, -15 )
